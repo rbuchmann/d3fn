@@ -1,6 +1,7 @@
 (ns d3fn.force
   (:require [reagent.core :as reagent]
             [d3fn.render :as render]
+            [d3fn.helpers :as helpers]
             [cljsjs.d3]))
 
 (defn graph [[width height] state]
@@ -14,20 +15,24 @@
                     ^{:key i} [render/link link])
                   links)]))
 
-(defn track-force-layout [size nodes links]
+(def force-map (helpers/mapping-map :nodes :links :size))
+
+(defn track-force-layout [size nodes links & [opts]]
   (let [state-atom (reagent/atom {})
-        js-nodes (clj->js nodes)
-        js-links (clj->js links)
         force (-> js/d3
                   .-layout
                   .force
-                  (.nodes js-nodes)
-                  (.links js-links)
-                  (.size (clj->js size)))]
+                  (helpers/configure-with
+                   force-map
+                   (merge
+                    {:nodes nodes
+                     :links links
+                     :size size}
+                    opts)))]
     (.on force "tick" (fn [evt]
                         (swap! state-atom assoc
-                               :nodes (js->clj js-nodes :keywordize-keys true)
-                               :links (js->clj js-links :keywordize-keys true))))
+                               :nodes (js->clj (.nodes force) :keywordize-keys true)
+                               :links (js->clj (.links force) :keywordize-keys true))))
     (.start force)
     state-atom))
 

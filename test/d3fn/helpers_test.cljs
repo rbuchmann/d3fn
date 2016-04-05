@@ -4,4 +4,6 @@
             [devcards.core :as dc :refer-macros [defcard deftest defcard-rg]]))
 
 (deftest mapping-test
-  (is (= (helpers/mapping-map :foo :bar) 5)))
+  (is (= (keys (helpers/mapping-map :foo :bar)) [:foo :bar]))
+  (is (let [repeat-fn (:repeat (helpers/mapping-map :repeat))]
+        (= "FooFooFoo" (repeat-fn "Foo" 3)))))

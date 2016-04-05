@@ -4,4 +4,4 @@
 (defmacro mapping-map [& keys]
   (into {}
         (for [k keys]
-          [k `(memfn ~(->camelCaseSymbol k))])))
+          [k `(fn [obj# arg#] (. obj# (~(->camelCaseSymbol k) (~'clj->js arg#))))])))
