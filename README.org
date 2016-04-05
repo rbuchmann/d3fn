@@ -1,0 +1,15 @@
+* D3FN
+
+This library provides a functional wrapper around the wonderful but
+very state oriented d3 library. It's a work in progress and expected
+to change a lot. Contributions are welcome.
+
+* How to run
+
+The development setup is based on devcards, so you can just run
+
+#+BEGIN_SRC sh
+lein figwheel
+#+END_SRC
+
+and then navigate to localhost:3449/cards.html.
