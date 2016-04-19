@@ -11,7 +11,8 @@
                  [devcards "0.2.1-5"]
                  [reagent "0.6.0-alpha"]
                  [cljsjs/d3 "3.5.7-1"]
-                 [camel-snake-kebab "0.3.2"]]
+                 [camel-snake-kebab "0.3.2"]
+                 [org.clojure/core.async "0.2.374"]]
 
   :plugins [[lein-figwheel "0.5.0-6"]
             [lein-cljsbuild "1.1.2" :exclusions [org.clojure/clojure]]]
