@@ -5,9 +5,9 @@
 
 (defcard-rg graph
   [force/graph [400 400]
-   (atom {:nodes [{:x 100 :y 200 :r 5} {:x 300 :y 200 :r 10}]
-          :links [{:source {:x 100 :y 200 :r 5}
-                   :target {:x 300 :y 200 :r 10}}]})])
+   (atom {:nodes (mapv #(assoc % :type :node) [{:x 100 :y 200 :r 5} {:x 300 :y 200 :r 10}])
+          :links (mapv #(assoc % :type :link) [{:source {:x 100 :y 200 :r 5}
+                                                :target {:x 300 :y 200 :r 10}}])})])
 
 (defn dynamic-graph-test []
   [force/dynamic-graph [400 400]
