@@ -1,21 +1,22 @@
 (defproject d3fn "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
+  :description "A functional wrapper to the otherwise great d3 library"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :min-lein-version "2.5.3"
 
-  :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "1.7.170"]
-                 [devcards "0.2.1-5"]
-                 [reagent "0.6.0-alpha"]
-                 [cljsjs/d3 "3.5.7-1"]
-                 [camel-snake-kebab "0.3.2"]
-                 [org.clojure/core.async "0.2.374"]]
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [org.clojure/clojurescript "1.10.439"]
+                 [devcards "0.2.6"]
+                 [reagent "0.8.1"]
+                 [cljsjs/d3 "5.7.0-0"]
+                 [cljsjs/kiwijs "1.1.0-0"]
+                 [camel-snake-kebab "0.4.0"]
+                 [org.clojure/core.async "0.4.490"]]
 
-  :plugins [[lein-figwheel "0.5.0-6"]
-            [lein-cljsbuild "1.1.2" :exclusions [org.clojure/clojure]]]
+  :plugins [[lein-figwheel "0.5.18"]
+            [lein-cljsbuild "1.1.7" :exclusions [org.clojure/clojure]]]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled"
                                     "target"]
