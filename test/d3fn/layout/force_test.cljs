@@ -1,9 +1,8 @@
-(ns d3fn.force-test
-  (:require [d3fn.force    :as force]
-            [reagent.core  :as r]
-            [cljs.test     :as test :refer-macros [is]]
-            [devcards.core :as dc :refer-macros [defcard deftest defcard-rg]]))
-
+(ns d3fn.layout.force-test
+  (:require [d3fn.layout.force :as force]
+            [reagent.core      :as r]
+            [cljs.test         :as test :refer-macros [is]]
+            [devcards.core     :as dc :refer-macros [defcard deftest defcard-rg]]))
 
 (defn render-graph [state]
   (let [{:keys [nodes links]} @state]

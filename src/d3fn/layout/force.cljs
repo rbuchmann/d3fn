@@ -1,10 +1,9 @@
-(ns d3fn.force
+(ns d3fn.layout.force
   (:require cljsjs.d3))
 
 (defn track-force-layout [state-atom {:keys [size nodes links] :as opts}]
   (let [indexed-nodes (map-indexed (fn [i node] (assoc node :index i)) nodes)
         link-force (js/d3.forceLink. (clj->js links))
-        _ (.distance link-force 50)
         force (-> js/d3
                   (.forceSimulation (clj->js indexed-nodes))
                   (.force "link" link-force)) ]
