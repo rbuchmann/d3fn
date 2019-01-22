@@ -1,8 +1,7 @@
 (ns d3fn.scales-test
-  (:require [d3fn.scales :as scales]
-            [cljs.test :as test :refer-macros [is]]
+  (:require [d3fn.scales   :as scales]
+            [cljs.test     :as test :refer-macros [is]]
             [devcards.core :as dc :refer-macros [defcard deftest defcard-rg]]))
-
 
 (defn within-epsilon [x target e]
   (< (- target e) x (+ target e)))

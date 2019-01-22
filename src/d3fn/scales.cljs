@@ -1,8 +1,5 @@
 (ns d3fn.scales
-  (:require [d3fn.helpers :as helpers]
-            cljsjs.d3))
-
-(def scale-map (helpers/mapping-map :domain :range :range-points))
+  (:require cljsjs.d3))
 
 (defn ordinal []
   (-> js/d3
