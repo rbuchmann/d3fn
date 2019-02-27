@@ -3,3 +3,5 @@
 /.nrepl-port
 /pom.xml
 /resources/public/js/compiled/
+/.lein-failures
+/.rebel_readline_history
