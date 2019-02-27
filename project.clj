@@ -47,4 +47,4 @@
                                    :output-to  "resources/public/js/compiled/d3fn.js"
                                    :optimizations :advanced}}]}
 
-  :figwheel { :css-dirs ["resources/public/css"] })
+  :figwheel {:css-dirs ["resources/public/css"]})
