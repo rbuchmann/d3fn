@@ -1,91 +1,112 @@
 (ns d3fn.layout.constraint
-  (:require cljsjs.kiwijs)
-  (:refer-clojure :exclude [= >= <= + - * / max min]))
+  (:require [d3fn.layout.kiwi-helper         :as k]
+            [d3fn.layout.constraint-protocol :as cp]
+            [devcards.core                   :as dc :refer-macros [defcard-rg]])
+  (:require-macros [d3fn.layout.constraint  :refer [let-c]]))
 
+(extend-protocol cp/SolverRelevant
+  object
+  (result [this] [this []]))
 
-;; Wrappers and constructors
+;; Some constraint helpers
 
-(defn make-solver []
-  (js/kiwi.Solver.))
+(def constraint-fns
+  {:=  k/=
+   :>= k/>=
+   :<= k/<=})
 
-(defn make-variable
-  ([] (js/kiwi.Variable.))
-  ([name] (js/kiwi.Variable. name)))
-
-(defn make-constraint [operator lhs rhs]
-  (js/kiwi.Constraint. (js/kiwi.Expression. lhs #js [-1 rhs]) operator))
-
-(defn make-expression
-  ([x] (js/kiwi.Expression. x))
-  ([x y] (js/kiwi.Expression. x y))
-  ([x y z] (js/kiwi.Expression. x y z)))
-
-(def strengths {:weak     js/kiwi.Strength.weak
-                :medium   js/kiwi.Strength.medium
-                :strong   js/kiwi.Strength.strong
-                :required js/kiwi.Strength.required})
-
-;; Make variables derefable
-
-(extend-protocol IDeref
-  js/kiwi.Variable
-  (-deref [this] (.value this)))
-
-;; Solver tools
-
-(defn suggest-value [solver variable value]
-  (.suggestValue solver variable value)
+(defn add-variable [solver [variable value strength]]
+  (k/add-edit-variable solver variable (or strength :strong))
+  (k/suggest-value solver variable value)
   solver)
 
 (defn add-constraint [solver constraint]
-  (.addConstraint solver constraint)
-  solver)
+  (let [[kind & args] constraint]
+    (if (= :var kind)
+      (add-variable solver args)
+      (let [cfn (constraint-fns kind)]
+        (k/add-constraint solver (apply cfn args))))))
 
-(defn add-edit-variables [solver vars strength]
-  (reduce (fn [_ v] (.addEditVariable solver v (strengths strength))) solver vars)
-  solver)
+(defn wrap-variable [x]
+  (let [v (k/make-variable)]
+    (cond
+      (nil? x) v
+      (number? x) (cp/with-constraint v [:var v x])
+      (vector? x) (cp/with-constraint v (into [:var v] (reverse x)))
+      ;; The reverse here allows us to write [:strong 42] which feels
+      ;; more natural. It's the other way around in add-variable to
+      ;; make strength optional
+      )))
 
-(defn solve [solver]
-  (.updateVariables solver)
-  solver)
+;; Constraints and higher order combinators
 
-;; Constraints
+(defn c=  [& args]
+  (map #(into [:=]  %) (partition 2 1 args)))
+(defn c<= [& args]
+  (map #(into [:<=] %) (partition 2 1 args)))
+(defn c>= [& args]
+  (map #(into [:>=] %) (partition 2 1 args)))
 
-(def  = (partial make-constraint js/kiwi.Operator.Eq))
-(def >= (partial make-constraint js/kiwi.Operator.Ge))
-(def <= (partial make-constraint js/kiwi.Operator.Le))
+(defn transpose [col]
+  (apply map list col))
 
-;; Operators
+(defn map-constraints [f col]
+  (let [[results constraints] (apply map list (map (comp cp/result f) col))]
+    (cp/with-constraints results (apply concat constraints))))
 
-(defn + [a b]
-  (.plus a b))
+(defn constrain-all [cfn col]
+  ())
 
-(defn - [a b]
-  (.minus a b))
+;; The meaty part of the layout algorithm
 
-(defn * [a b]
-  (.multiply a b))
+(defn box [& {:keys [x y w h]}]
+  (let-c [[x y w h] (map-constraints wrap-variable [x y w h])]
+    (c>= x (k/make-expression 0))
+    (c>= y (k/make-expression 0))
+    {:x x
+     :y y
+     :w w
+     :h h}))
 
-(defn / [a b]
-  (.divide a b))
+(def left :x)
+(def top  :y)
+(defn right  [{:keys [x w]}] (k/+ x w))
+(defn bottom [{:keys [y h]}] (k/+ y h))
+(def width  :w)
+(def height :h)
 
-;; Higher level constraints
+(defn center [{:keys [x y w h]}]
+  [(k/+ x (k// w 2)) (k/+ y (k// h 2))])
 
-(defn max [solver & args]
-  (let [m (make-variable)]
-    (doseq [v args]
-      (add-constraint solver (>= m v)))
-    m))
+(defn fixed-gap [boxes gap]
+  (for [[a b] (partition 2 1 boxes)]
+    [:= (k/- (left b) (right a)) gap]))
 
-(defn min [solver & args]
-  (let [m (make-variable)]
-    (doseq [v args]
-      (add-constraint solver (<= m v)))
-    m))
+(defn align-bottom [boxes]
+  (for [[a b] (partition 2 1 boxes)]
+    [:= (bottom a) (bottom b)]))
 
-(defn center [solver [x y] [w h]]
-  (let [[cx cy] (repeatedly 2 make-variable)]
-    (-> solver
-        (add-constraint (= cx (+ x (/ w 2))))
-        (add-constraint (= cy (+ y (/ h 2)))))
-    [cx cy]))
+(defn layout [v]
+  (let [[value constraints] (cp/result v)
+        solver (k/make-solver)]
+    (k/solve (reduce add-constraint solver constraints))
+    value))
+
+;; Rendering
+
+(defn to-rectangle [{:keys [x y w h]}]
+  [:rect {:x @x :y @y :width @w :height @h}])
+
+;; Tests
+
+(defcard-rg testing-layout
+  [:div
+   [:h1 "Barchart"]
+   [:svg {:width  800
+          :height 600}
+    (into [:g]
+          (layout
+            (let-c [bars (map-constraints #(box :w 20 :h %) [40 20 70 90])]
+              (fixed-gap bars 20)
+              (align-bottom bars)
+              (map to-rectangle bars))))]])
