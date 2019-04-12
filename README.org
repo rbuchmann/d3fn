@@ -9,7 +9,7 @@ to change a lot. Contributions are welcome.
 The development setup is based on devcards, so you can just run
 
 #+BEGIN_SRC sh
-lein figwheel
+lein figwheel devcards
 #+END_SRC
 
 and then navigate to localhost:3449/cards.html.
