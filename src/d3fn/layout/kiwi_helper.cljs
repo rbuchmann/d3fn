@@ -2,7 +2,6 @@
   (:require cljsjs.kiwijs)
   (:refer-clojure :exclude [= >= <= + - * / max min]))
 
-
 ;; Wrappers and constructors
 
 (defn make-solver []

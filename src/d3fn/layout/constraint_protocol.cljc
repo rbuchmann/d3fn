@@ -1,6 +1,6 @@
 (ns d3fn.layout.constraint-protocol
   "A protocol to allow functions to additionally return constraints when
-  required and assoicated helpers. The result function will return a
+  required and associated helpers. The result function will return a
   vector of the value and associated constraints, which can also be
   variable definitions")
 

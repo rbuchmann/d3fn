@@ -6,14 +6,14 @@
 
   :min-lein-version "2.5.3"
 
-  :dependencies [[org.clojure/clojure "1.10.0"]
-                 [org.clojure/clojurescript "1.10.439"]
+  :dependencies [[org.clojure/clojure "1.10.1"]
+                 [org.clojure/clojurescript "1.10.597"]
                  [devcards "0.2.6"]
                  [reagent "0.8.1"]
-                 [cljsjs/d3 "5.7.0-0"]
+                 [cljsjs/d3 "5.12.0-0"]
                  [cljsjs/kiwijs "1.1.0-0"]
-                 [camel-snake-kebab "0.4.0"]
-                 [org.clojure/core.async "0.4.490"]]
+                 [camel-snake-kebab "0.4.1"]
+                 [org.clojure/core.async "0.6.532"]]
 
   :plugins [[lein-figwheel "0.5.18"]
             [lein-cljsbuild "1.1.7" :exclusions [org.clojure/clojure]]]
