@@ -4,4 +4,5 @@
             [d3fn.layout.force-test]
             [d3fn.layout.packed-test]
             [d3fn.layout.kiwi-helper-test]
-            [d3fn.layout.constraint-test]))
+            [d3fn.layout.constraint-test]
+            [d3fn.robots]))
