@@ -13,7 +13,8 @@
                  [cljsjs/d3 "5.12.0-0"]
                  [cljsjs/kiwijs "1.1.0-0"]
                  [camel-snake-kebab "0.4.1"]
-                 [org.clojure/core.async "0.6.532"]]
+                 [org.clojure/core.async "0.6.532"]
+                 [org.clojure/test.check "0.10.0"]]
 
   :plugins [[lein-figwheel "0.5.18"]
             [lein-cljsbuild "1.1.7" :exclusions [org.clojure/clojure]]]

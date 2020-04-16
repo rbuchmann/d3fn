@@ -78,6 +78,9 @@
 (defn center [{:keys [x y w h]}]
   [(k/+ x (k// w 2)) (k/+ y (k// h 2))])
 
+(def center-x (comp first  center))
+(def center-y (comp second center))
+
 (defn fixed-gap [boxes gap]
   (for [[a b] (partition 2 1 boxes)]
     [:= (k/- (left b) (right a)) gap]))
@@ -85,6 +88,18 @@
 (defn align-bottom [boxes]
   (for [[a b] (partition 2 1 boxes)]
     [:= (bottom a) (bottom b)]))
+
+(defn align-center-x [boxes]
+  (for [[a b] (partition 2 1 boxes)]
+    [:= (center-x a) (center-x b)]))
+
+(defn align-center-y [boxes]
+  (for [[a b] (partition 2 1 boxes)]
+    [:= (center-y a) (center-y b)]))
+
+(defn above [boxes]
+  (for [[a b] (partition 2 1 boxes)]
+    [:>= (bottom a) (top b)]))
 
 (defn layout [v]
   (let [[value constraints] (cp/result v)
@@ -94,8 +109,9 @@
 
 ;; Rendering
 
-(defn to-rectangle [{:keys [x y w h]}]
-  [:rect {:x @x :y @y :width @w :height @h}])
+(defn to-rectangle [{:keys [x y w h]} & {:as opts}]
+  [:rect (merge {:x @x :y @y :width @w :height @h}
+                opts)])
 
 ;; Tests
 
@@ -109,4 +125,4 @@
             (let-c [bars (map-constraints #(box :w 20 :h %) [40 20 70 90])]
               (fixed-gap bars 20)
               (align-bottom bars)
-              (map to-rectangle bars))))]])
+              (map #(to-rectangle % :style {:fill "blue"}) bars))))]])
